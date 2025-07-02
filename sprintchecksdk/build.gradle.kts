@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    id("maven-publish")
 }
 
 android {
@@ -61,9 +62,22 @@ dependencies {
 
     implementation ("com.regula.face.core:basic:6.3.+@aar")
 
-    implementation("com.squareup.okhttp3:okhttp:4.9.1") // or latest version
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation(libs.okhttp) // or latest version
+    implementation(libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.scalars)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release"){
+            afterEvaluate {
+                from(components["release"])
+                groupId = "com.a5starcompany"
+                artifactId = "sprintchecksdk"
+                version = "1.0.0"
+            }
+        }
+    }
 }
