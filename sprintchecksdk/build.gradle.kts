@@ -69,14 +69,14 @@ dependencies {
     implementation(libs.converter.scalars)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release"){
-            afterEvaluate {
-                from(components["release"])
+afterEvaluate {
+    publishing {
+        publications {
+            register<MavenPublication>("release") {
                 groupId = "com.a5starcompany"
                 artifactId = "sprintchecksdk"
                 version = "1.0.0"
+                from(components["release"])
             }
         }
     }
