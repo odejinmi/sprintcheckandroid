@@ -30,7 +30,7 @@ android {
         //noinspection DataBindingWithoutKapt
         dataBinding = true
         buildConfig = true
-        prefabPublishing = true
+//        prefabPublishing = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
