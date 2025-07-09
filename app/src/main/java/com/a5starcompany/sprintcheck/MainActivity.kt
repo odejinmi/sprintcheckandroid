@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,37 +25,54 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.a5starcompany.sprintcheck.ui.theme.SprintcheckTheme
 import com.a5starcompany.sprintchecksdk.util.CheckoutMethod
+import com.a5starcompany.sprintchecksdk.util.KYCCallback
 import com.a5starcompany.sprintchecksdk.util.KYCConfig
+import com.a5starcompany.sprintchecksdk.util.KYCInitializationResult
+import com.a5starcompany.sprintchecksdk.util.KYCResult
 import com.a5starcompany.sprintchecksdk.util.KYCVerificationManager
 
 class MainActivity : ComponentActivity() {
 
-    private val kycLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        when (result.resultCode) {
-            RESULT_OK -> {
-                val verificationId = result.data?.getStringExtra("reference")
-                val score = result.data?.getIntExtra("confidenceLevel", 0) ?: 0
-                val isLive = result.data?.getBooleanExtra("status", false) ?: false
-                val verify = result.data?.getBooleanExtra("verify", false) ?: false
-                val message = result.data?.getStringExtra("message")
-                val name = result.data?.getStringExtra("name")
-                val bvn = result.data?.getStringExtra("bvn")
-                val nin = result.data?.getStringExtra("nin")
-                val method = result.data?.getStringExtra("method")
 
-                Log.d("TAG", "result: ${result.data?.extras} $method")
-                // Handle successful verification
-                handleVerificationSuccess(verificationId, score, isLive)
-            }
-            RESULT_CANCELED -> {
-                val errorCode = result.data?.getStringExtra("error_code")
-                val errorMessage = result.data?.getStringExtra("error_message")
+    private val callback = object : KYCCallback {
 
-                // Handle verification failure or cancellation
-                handleVerificationFailure(errorCode, errorMessage)
-            }
+        override fun onKYCSuccess(result: KYCResult.Success) {
+            // Handle successful verification
+            // Access all result data
+            val name = result.name
+            val bvn = result.bvn
+            val score = result.confidenceLevel
+            val verificationId = result.reference
+            val isLive = result.status
+            val verify = result.verify
+            val message = result.message
+            val nin = result.nin
+            val method = result.method
+
+
+            Log.d("TAG", "result: ${result.toString()} $method")
+            // Handle successful verification
+            handleVerificationSuccess(verificationId, score, isLive)
+        }
+
+        override fun onKYCFailure(result: KYCResult.Failure) {
+            // Handle verification failure
+            // Access error details
+            val errorCode = result.errorCode
+            val errorMessage = result.errorMessage
+
+            // Handle verification failure or cancellation
+            handleVerificationFailure(errorCode, errorMessage)
+            // Handle error...
+        }
+
+        override fun onKYCCancelled() {
+            // Handle user cancellation
+            val errorCode = "user csncelled"
+            val errorMessage = "Verification cancelled by user"
+
+            // Handle verification failure or cancellation
+            handleVerificationFailure(errorCode, errorMessage)
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +117,7 @@ class MainActivity : ComponentActivity() {
                         Button(
                             onClick = {
 
-                                KYCVerificationManager.getInstance().startVerification(this@MainActivity, kycLauncher, CheckoutMethod.bvn,"odejinmiabraham@gmail.com")
+                                KYCVerificationManager.getInstance().startVerification(this@MainActivity,CheckoutMethod.bvn,"odejinmiabraham@gmail.com",callback)
 //                                SprintCheck().start(this@MainActivity)
                             },
 //                            enabled = text.value.isNotEmpty() && text.value.toInt() != 0,
@@ -111,7 +127,7 @@ class MainActivity : ComponentActivity() {
                         Button(
                             onClick = {
 
-                                KYCVerificationManager.getInstance().startVerification(this@MainActivity, kycLauncher, CheckoutMethod.nin,"odejinmiabraham@gmail.com")
+                                KYCVerificationManager.getInstance().startVerification(this@MainActivity,CheckoutMethod.nin,"odejinmiabraham@gmail.com",callback)
 //                                SprintCheck().start(this@MainActivity)
                             },
 //                            enabled = text.value.isNotEmpty() && text.value.toInt() != 0,
@@ -125,10 +141,23 @@ class MainActivity : ComponentActivity() {
         }
     // Initialize KYC library
     val config = KYCConfig(
-        apiKey = "scb1edcd88-64f7485186d9781ca624a903",
-        encryptionkey = "enc67fe4978b16fc1744718200"
+        apiKey = "************************",
+        encryptionkey = "********************"
     )
-    KYCVerificationManager.getInstance().initialize(config)
+        val kycManager = KYCVerificationManager.getInstance()
+        val initResult = kycManager.initialize(config)
+
+        when (initResult) {
+            is KYCInitializationResult.Success -> {
+                // Initialization successful, proceed with verification
+                Log.d("mainActivity", "sdk initialised")
+            }
+            is KYCInitializationResult.Failure -> {
+                // Handle initialization failure
+                Log.d("mainActivity", "sdk Initialization failed: ${initResult.errorMessage}")
+                return
+            }
+        }
 }
 
 private fun handleVerificationSuccess(verificationId: String?, score: Int, isLive: Boolean) {

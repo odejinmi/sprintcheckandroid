@@ -12,6 +12,7 @@ import com.a5starcompany.sprintchecksdk.fragment.LivenessCheck
 import com.a5starcompany.sprintchecksdk.fragment.Success
 import com.a5starcompany.sprintchecksdk.fragment.Verificationdetail
 import com.a5starcompany.sprintchecksdk.util.KYCResult
+import com.a5starcompany.sprintchecksdk.util.KYCVerificationManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,11 +27,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-//        if (savedInstanceState == null) {
-//            supportFragmentManager.beginTransaction()
-//                .replace(R.id.container, Verificationdetail.newInstance("",""))
-//                .commitNow()
-//        }
 
         viewModel = ViewModelProvider(this)[KYCVerificationViewModel::class.java]
 
@@ -42,33 +38,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupObservers() {
         viewModel.verificationResult.observe(this) { result ->
-            when (result) {
-                is KYCResult.Success -> {
-                    setResult(RESULT_OK, Intent().apply {
-                        putExtra("reference", result.reference)
-                        putExtra("message", result.message)
-                        putExtra("name", result.name)
-                        putExtra("bvn", result.bvn)
-                        putExtra("nin", result.nin)
-                        putExtra("confidenceLevel", result.confidenceLevel)
-                        putExtra("status", result.status)
-                        putExtra("verify", result.verify)
-                        putExtra("method", result.method)
-                    })
-                    finish()
-                }
-                is KYCResult.Failure -> {
-                    setResult(RESULT_CANCELED, Intent().apply {
-                        putExtra("error_code", result.errorCode)
-                        putExtra("error_message", result.errorMessage)
-                    })
-                    finish()
-                }
-                is KYCResult.Cancelled -> {
-                    setResult(RESULT_CANCELED)
-                    finish()
-                }
-            }
+            // Report result through manager and finish
+            KYCVerificationManager.getInstance().reportResult(result)
+            finish()
         }
 
         viewModel.currentStep.observe(this) { step ->
@@ -97,14 +69,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun showScoreFragment(isSuccess: Boolean) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, Success.newInstance(isSuccess,""))
+            .replace(R.id.container, Success.newInstance(isSuccess, ""))
             .commit()
     }
 
     private fun showFaceRecognitionErrorFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, Success.newInstance(false,"Invalid BVN provided"))
+            .replace(R.id.container, Success.newInstance(false, "Invalid BVN provided"))
             .commit()
+    }
+
+    override fun onBackPressed() {
+        // Handle back press as cancellation
+        KYCVerificationManager.getInstance().reportResult(KYCResult.Cancelled)
+        super.onBackPressed()
     }
 }
 
