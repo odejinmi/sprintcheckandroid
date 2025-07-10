@@ -128,7 +128,7 @@ class KYCVerificationManager private constructor() {
     }
 
     val baseUrl get(): String {
-        return "https://sprintcheck.megasprintlimited.com.ng/api/sdk/"
+        return "https://api.sprintcheck.megasprintlimited.com.ng/api/sdk/"
     }
 }
 
