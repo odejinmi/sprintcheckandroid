@@ -162,7 +162,7 @@ sealed class KYCResult {
 }
 
 enum class CheckoutMethod {
-    bvn, nin, selectable
+    bvn, nin, facial, documentreader, selectable
 }
 
 interface KYCCallback {

@@ -1,7 +1,5 @@
 package com.a5starcompany.sprintchecksdk
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,8 +9,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.a5starcompany.sprintchecksdk.fragment.LivenessCheck
 import com.a5starcompany.sprintchecksdk.fragment.Success
 import com.a5starcompany.sprintchecksdk.fragment.Verificationdetail
+import com.a5starcompany.sprintchecksdk.util.CheckoutMethod
 import com.a5starcompany.sprintchecksdk.util.KYCResult
 import com.a5starcompany.sprintchecksdk.util.KYCVerificationManager
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +32,13 @@ class MainActivity : AppCompatActivity() {
 
         setupObservers()
 
-        // Start with verification details screen
-        showVerificationDetailsFragment()
+        if(KYCVerificationManager.getInstance().transactiontype == CheckoutMethod.facial){
+            viewModel.startVerificationProcess("")
+        }else {
+            // Start with verification details screen
+            showVerificationDetailsFragment()
+        }
+
     }
 
     private fun setupObservers() {
@@ -63,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     private fun showLivenessCheckFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, LivenessCheck())
-            .addToBackStack(null)
             .commit()
     }
 
@@ -75,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showFaceRecognitionErrorFragment() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, Success.newInstance(false, "Invalid BVN provided"))
+            .replace(R.id.container, Success.newInstance(false, "Invalid ${KYCVerificationManager.getInstance().transactiontype.toString().uppercase(Locale.ROOT)} provided"))
             .commit()
     }
 

@@ -134,6 +134,16 @@ class MainActivity : ComponentActivity() {
                             ) {
                             Text("start NIN Verification")
                         }
+                        Button(
+                            onClick = {
+
+                                KYCVerificationManager.getInstance().startVerification(this@MainActivity,CheckoutMethod.facial,"odejinmiabraham@gmail.com",callback)
+//                                SprintCheck().start(this@MainActivity)
+                            },
+//                            enabled = text.value.isNotEmpty() && text.value.toInt() != 0,
+                            ) {
+                            Text("start Face Verification")
+                        }
 
                     }
                 }
@@ -141,8 +151,8 @@ class MainActivity : ComponentActivity() {
         }
     // Initialize KYC library
     val config = KYCConfig(
-        apiKey = "************************",
-        encryptionkey = "********************"
+        apiKey = "scb1edcd88-64f7485186d9781ca624a903",
+        encryptionkey = "enc67fe4978b16fc1744718200"
     )
         val kycManager = KYCVerificationManager.getInstance()
         val initResult = kycManager.initialize(config)

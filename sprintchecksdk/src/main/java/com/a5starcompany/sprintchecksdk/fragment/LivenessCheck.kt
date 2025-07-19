@@ -76,6 +76,9 @@ class LivenessCheck : Fragment() {
         }
         allPermissionsGranted()
         setupClickListeners()
+        viewModel.facetitle.observe(viewLifecycleOwner) { title ->
+            binding.title.text = title
+        }
         showLoadingSafely("Validating ${KYCVerificationManager.getInstance().transactiontype.toString().uppercase(Locale.ROOT)}...", "Please wait while we verify your details")
         viewModel.bvnimage.observe(viewLifecycleOwner) { image ->
             if (captureimage != null){
@@ -108,7 +111,6 @@ class LivenessCheck : Fragment() {
                         "Liveness status: " + livenessResponse.liveness.name,
                         Toast.LENGTH_SHORT
                     ).show()
-                    Log.d("TAG", "liveness response: ${livenessResponse.liveness.name}")
                     captureimage = livenessResponse.bitmap
                     if (viewModel.bvnimage.value != null){
                         viewModel.matchFaces(captureimage!!, requireContext())

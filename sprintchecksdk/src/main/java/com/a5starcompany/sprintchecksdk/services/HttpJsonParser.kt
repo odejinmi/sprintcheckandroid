@@ -21,6 +21,7 @@ class HttpJsonParser {
     ): JSONObject? {// Convert params to a string representation for hashing
         val signature = if (params != null) {
             val paramsString = mapToJsonLikeString(params)
+            Logger().d("paramsString", paramsString)
             var hashpayload = generateHmacSha512(paramsString)
             hashpayload
         }else{
@@ -95,8 +96,10 @@ class HttpJsonParser {
 
     // Method 4: JSON-like string format
     fun mapToJsonLikeString(params: Map<String, String?>): String {
-        return params.entries.joinToString(", ", "{", "}") {
-            "\"${it.key}\":${it.value?.let { "\"$it\"" } ?: "null"}"
-        }
+        val order = listOf("number", "identifier")
+        return order.filter { params.containsKey(it) }
+            .joinToString(",", "{", "}") {
+                "\"$it\":${params[it]?.let { v -> "\"$v\"" } ?: ""}"
+            }
     }
 }

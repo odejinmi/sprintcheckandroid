@@ -49,6 +49,16 @@
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"/>
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Face Recognition"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="22dp"/>
                 <ImageView
                     android:id="@+id/ry3ew6s9y7kd"
                     android:layout_width="245dp"
