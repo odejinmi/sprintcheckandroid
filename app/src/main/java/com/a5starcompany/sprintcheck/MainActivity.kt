@@ -151,8 +151,8 @@ class MainActivity : ComponentActivity() {
         }
     // Initialize KYC library
     val config = KYCConfig(
-        apiKey = "scb1edcd88-64f7485186d9781ca624a903",
-        encryptionkey = "enc67fe4978b16fc1744718200"
+        apiKey = "**********************************",
+        encryptionkey = "********************************"
     )
         val kycManager = KYCVerificationManager.getInstance()
         val initResult = kycManager.initialize(config)
