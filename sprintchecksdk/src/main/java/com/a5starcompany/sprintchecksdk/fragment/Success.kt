@@ -126,7 +126,6 @@ class Success : Fragment() {
 
         animator.addUpdateListener { animation ->
             val currentScore = animation.animatedValue as Int
-            Logger().d("currentScore", currentScore.toString())
             binding.tvScore.text = currentScore.toString()
 
             // Update progress indicator color based on score
