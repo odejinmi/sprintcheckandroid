@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setupObservers()
 
         if(KYCVerificationManager.getInstance().transactiontype == CheckoutMethod.facial){
-            viewModel.startVerificationProcess("")
+            viewModel.startVerificationProcess("00000000000")
         }else {
             // Start with verification details screen
             showVerificationDetailsFragment()
